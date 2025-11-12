@@ -16,6 +16,10 @@ async function countryByName(country) {
     return reso;
 }
 
+//Area array
+const areas1 = [0, 50000, 200000, 600000, 2000000];
+const areas2 = [20000, 100000, 500000, 1000000];
+
 //Countries Array
 const countries = [
   { name: "Afghanistan", flag: "🇦🇫" },
@@ -209,12 +213,20 @@ const countries = [
   { name: "Vietnam", flag: "🇻🇳" },
   { name: "Yemen", flag: "🇾🇪" },
   { name: "Zambia", flag: "🇿🇲" },
-  { name: "Zimbabwe", flag: "🇿🇼" }
+  { name: "Zimbabwe", flag: "🇿🇼" },
+  { name: "Kosovo", flag: "🇽🇰"},
+  { name: "Vatican City", flag: "🇻🇦"}
 ];
 
 //Variables
 //Area Game
+const areaGame = document.querySelector("#area-game");
+const areaGameInput = document.querySelector("#area-game input");
+const areaGameRestart = document.querySelector("#area-game .restart");
 const areaGameStart = document.querySelector("#area");
+const areaGameStatus = document.querySelector("#area-game .status");
+const areaGameSubmit = document.querySelector("#area-game button");
+const areaGameTitle = document.querySelector("#area-game h2");
 //Currency Game
 const currencyGame = document.querySelector("#currency-game");
 const currencyGameCountry = document.querySelector("#currency-game .country");
@@ -226,11 +238,75 @@ const currencygameSubmit = document.querySelector("#currency-game button");
 //Population Game
 const populationGameStart = document.querySelector("#population");
 //Other
+let area1;
+let area2;
 let randomCountry;
 
 //Eventlisteners
+areaGameRestart.addEventListener("click", () => {
+    currencyGame.style.display = "none";
+    //populationGame.style.display = "none";
+    areaGame.style.display = "block";
+    areaGameInput.value = "";
+    areaGameInput.placeholder = "Enter country";
+    areaGameTitle.textContent = "";
+    areaGameStatus.textContent = "...";
+    let rand = Math.floor(Math.random() * areas1.length);
+    area1 = areas1[rand];
+    area2 = areas2[rand];
+
+    if (area2 === undefined) {
+        areaGameTitle.textContent = `Name a country that has an area above ${area1}km²`;
+    } else {
+        areaGameTitle.textContent = `Name a country that has an area between ${area1}km² and ${area2}km²`;
+    }
+});
+
+areaGameStart.addEventListener("click", () => {
+    currencyGame.style.display = "none";
+    //populationGame.style.display = "none";
+    areaGame.style.display = "block";
+    areaGameInput.value = "";
+    areaGameInput.placeholder = "Enter country";
+    areaGameTitle.textContent = "";
+    areaGameStatus.textContent = "...";
+    let rand = Math.floor(Math.random() * areas1.length);
+    area1 = areas1[rand];
+    area2 = areas2[rand];
+
+    if (area2 === undefined) {
+        areaGameTitle.textContent = `Name a country that has an area above ${area1}km²`;
+    } else {
+        areaGameTitle.textContent = `Name a country that has an area between ${area1}km² and ${area2}km²`;
+    }
+});
+
+areaGameSubmit.addEventListener("click", async () => {
+    let country = countries.find((x) => x.name.toLowerCase() === areaGameInput.value.toLowerCase());
+    if (!country) {
+        areaGameStatus.textContent = "Invalid country, try again";
+        return;
+    } else {
+        let countryArr = await countryByName(country.name);
+        console.log(countryArr);
+        if (area2 === undefined) {
+            if (countryArr[0].surface_area > area1) {
+                areaGameStatus.textContent = `Correct! ${country.name} ${country.flag} has an area of ${countryArr[0].surface_area}km²`;
+            } else {
+                areaGameStatus.textContent = `Incorrect! ${country.name} ${country.flag} has an area of ${countryArr[0].surface_area}km²`;
+            }
+        } else {
+            if (countryArr[0].surface_area > area1 && countryArr[0].surface_area < area2) {
+                areaGameStatus.textContent = `Correct! ${country.name} ${country.flag} has an area of ${countryArr[0].surface_area}km²`;
+            } else {
+                areaGameStatus.textContent = `Incorrect! ${country.name} ${country.flag} has an area of ${countryArr[0].surface_area}km²`;
+            }
+        }
+    }
+})
+
 currencyGameRestart.addEventListener("click", () => {
-    //areaGame.style.display = "none";
+    areaGame.style.display = "none";
     //populationGame.style.display = "none";
     currencyGameStatus.textContent = "...";
     currencyGameInput.value = "";
@@ -242,7 +318,7 @@ currencyGameRestart.addEventListener("click", () => {
 });
 
 currencyGameStart.addEventListener("click", () => {
-    //areaGame.style.display = "none";
+    areaGame.style.display = "none";
     //populationGame.style.display = "none";
     currencyGameStatus.textContent = "...";
     currencyGameInput.value = "";
